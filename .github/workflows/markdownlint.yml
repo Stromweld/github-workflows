@@ -12,7 +12,7 @@ jobs:
       - name: Verify Changed files
         id: verify-changed-files
         run: |
-          apt update && apt install git
+          apk add --no-cache git
           changed=`git diff --diff-filter=d --name-only ${{ github.event.before }}`
           if grep ".*\.md" <<< $changed; then
             echo "::set-output name=files_changed::'true'"
