@@ -4,8 +4,9 @@ on:
 
 jobs:
   linters:
-    - uses: ./linters/markdownlint.yml
-    - uses: ./linters/yamllint.yml
+    steps:
+      - uses: ./linters/markdownlint.yml
+      - uses: ./linters/yamllint.yml
 
   check:
     if: always()
