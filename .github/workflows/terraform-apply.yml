@@ -1,12 +1,6 @@
 ---
 on:
   workflow_call:
-    paths:
-      - '**.tf'
-      - '**.tfvars'
-      - '**.tfvars.json'
-    branches:
-      - main
 
 jobs:
   terraform-apply:
@@ -17,11 +11,21 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@main
+      - name: Verify Changed files
+          uses: tj-actions/verify-changed-files@main
+          id: verify-changed-files
+          with:
+            files: |
+              **.tf
+              **.tfvars
+              **.tfvars.json
       - name: Setup Terraform
+        if: steps.verify-changed-files.outputs.files_changed == 'true'
         uses: hashicorp/setup-terraform@main
         with:
           cli_config_credentials_token: ${{ secrets.TOKEN_TFC }}
       - name: Terraform Init
+        if: steps.verify-changed-files.outputs.files_changed == 'true'
         run: |
           cat <<-EOF > ./sensitive.auto.tfvars
           tfc_token    = "${{ secrets.TOKEN_TFC }}"
@@ -30,5 +34,5 @@ jobs:
           terraform init
           terraform -version
       - name: Terraform Apply
-        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        if: steps.verify-changed-files.outputs.files_changed == 'true' && github.ref == 'refs/heads/main' && github.event_name == 'push' && github.branch == 'main'
         run: terraform apply -auto-approve -input=false
