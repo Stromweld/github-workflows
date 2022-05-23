@@ -4,9 +4,9 @@ on:
 
 jobs:
   markdownlint:
-    uses: Stromweld/github-workflows/.github/workflows/markdownlint.yml@main
+    uses: ./.github/workflows/markdownlint.yml@main
   yamllint:
-    uses: Stromweld/github-workflows/.github/workflows/yamllint.yml@main
+    uses: ./.github/workflows/yamllint.yml@main
 #  markdownlint:
 #    runs-on: ubuntu-latest
 #    container: ruby:alpine
