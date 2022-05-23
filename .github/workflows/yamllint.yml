@@ -13,7 +13,7 @@ jobs:
         id: verify-changed-files
         run: |
           apk add --no-cache git
-          changed=`git diff --diff-filter=d --name-only`
+          changed=`git diff --diff-filter=d --name-only --merge-base`
           if grep ".*\.yml|.*\.yaml" <<< $changed; then
             echo "::set-output name=files_changed::'true'"
           else
