@@ -12,13 +12,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@main
       - name: Verify Changed files
-          uses: tj-actions/verify-changed-files@main
-          id: verify-changed-files
-          with:
-            files: |
-              **.tf
-              **.tfvars
-              **.tfvars.json
+        uses: tj-actions/verify-changed-files@main
+        id: verify-changed-files
+        with:
+          files: |
+            **.tf
+            **.tfvars
+            **.tfvars.json
       - name: Check linting of Terraform modules
         if: steps.verify-changed-files.outputs.files_changed == 'true'
         uses: devops-infra/action-tflint@master
@@ -34,13 +34,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@main
       - name: Verify Changed files
-          uses: tj-actions/verify-changed-files@main
-          id: verify-changed-files
-          with:
-            files: |
-              **.tf
-              **.tfvars
-              **.tfvars.json
+        uses: tj-actions/verify-changed-files@main
+        id: verify-changed-files
+        with:
+          files: |
+            **.tf
+            **.tfvars
+            **.tfvars.json
       - name: Terraform Format
         if: steps.verify-changed-files.outputs.files_changed == 'true'
         uses: actionshub/terraform-lint@main
@@ -54,13 +54,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@main
       - name: Verify Changed files
-          uses: tj-actions/verify-changed-files@main
-          id: verify-changed-files
-          with:
-            files: |
-              **.tf
-              **.tfvars
-              **.tfvars.json
+        uses: tj-actions/verify-changed-files@main
+        id: verify-changed-files
+        with:
+          files: |
+            **.tf
+            **.tfvars
+            **.tfvars.json
       - name: Setup Terraform
         if: steps.verify-changed-files.outputs.files_changed == 'true'
         uses: hashicorp/setup-terraform@main
