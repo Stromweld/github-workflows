@@ -3,16 +3,17 @@ on:
   pull_request:
 
 jobs:
-  linters:
-    steps:
-      - uses: ./linters/markdownlint.yml
-      - uses: ./linters/yamllint.yml
+  markdownlint:
+    uses: ./linters/markdownlint.yml
+  yamllint:
+    uses: ./linters/yamllint.yml
 
   check:
     if: always()
 
     needs:
-      - linters
+      - markdownlint
+      - yamllint
 
     runs-on: Ubuntu-latest
 
