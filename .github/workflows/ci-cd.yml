@@ -4,9 +4,25 @@ on:
 
 jobs:
   markdownlint:
-    uses: Stromweld/github-workflows/.github/workflows/markdownlint.yml@main
+    runs-on: ubuntu-latest
+    container: ruby:alpine
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@main
+      - name: Run Markdown Lint
+        run: |
+          gem install mdl
+          find . -not -path "*/\.*" -type f -iname "*.md" -exec mdl \{\} \+
   yamllint:
-    uses: Stromweld/github-workflows/.github/workflows/yamllint.yml@main
+    runs-on: ubuntu-latest
+    container: ruby:alpine
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@main
+      - name: Run Yaml Linter
+        run: |
+          gem install yaml-lint
+          yaml-lint -i ./
 
   check:
     if: always()
