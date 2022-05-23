@@ -12,6 +12,7 @@ jobs:
       - name: Verify Changed files
         id: verify-changed-files
         run: |
+          apt update && apt install git
           changed=`git diff --diff-filter=d --name-only`
           if grep ".*\.yml|.*\.yaml" <<< $changed; then
             echo "::set-output name=files_changed::'true'"
