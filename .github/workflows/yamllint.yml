@@ -9,7 +9,7 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@main
-      id: verify-changed-files
+        id: verify-changed-files
         run: |
           if git diff --diff-filter=d --name-only main main^@ | grep ".*\.yml|.*\.yaml"; then
             echo "::set-output name=files_changed::'true'"
