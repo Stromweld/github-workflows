@@ -4,9 +4,9 @@ on:
 
 jobs:
   markdownlint:
-    uses: ./.github/workflows/linters/markdownlint.yml@main
+    uses: Stromweld/github-workflows/.github/workflows/linters/markdownlint.yml@main
   yamllint:
-    uses: ./linters/yamllint.yml@main
+    uses: Stromweld/github-workflows/.github/workflows/linters/yamllint.yml@main
 
   check:
     if: always()
