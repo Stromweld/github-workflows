@@ -9,6 +9,8 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@main
+        with:
+          fetch-depth: 0
       - name: Verify Changed files
         id: verify-changed-files
         run: |
