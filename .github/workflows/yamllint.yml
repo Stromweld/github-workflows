@@ -9,6 +9,7 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@main
+      - name: Verify Changed files
         id: verify-changed-files
         run: |
           if git diff --diff-filter=d --name-only main main^@ | grep ".*\.yml|.*\.yaml"; then
