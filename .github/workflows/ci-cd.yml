@@ -4,9 +4,9 @@ on:
 
 jobs:
   markdownlint:
-    uses: ./.github/workflows/markdownlint.yml@main
+    uses: ./.github/workflows/markdownlint.yml
   yamllint:
-    uses: ./.github/workflows/yamllint.yml@main
+    uses: ./.github/workflows/yamllint.yml
 #  markdownlint:
 #    runs-on: ubuntu-latest
 #    container: ruby:alpine
