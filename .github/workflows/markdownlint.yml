@@ -10,13 +10,15 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@main
       - name: Verify Changed files
-        uses: tj-actions/changed-files@main
         id: verify-changed-files
-        with:
-          files: |
-            **/**.md
+        run: |
+          if git diff --diff-filter=d --name-only ${{ github.event.before }} | grep ".*\.md"; then
+            echo "::set-output name=files_changed::'true'"
+          else
+            echo "::set-output name=files_changed::'false'"
+          fi
       - name: Run Markdown Linter
-        if: steps.verify-changed-files.outputs.any_changed == 'true'
+        if: steps.verify-changed-files.outputs.files_changed == 'true'
         run: |
           gem install mdl
           find . -not -path "*/\.*" -type f -iname "*.md" -exec mdl \{\} \+
