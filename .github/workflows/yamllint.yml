@@ -14,9 +14,9 @@ jobs:
         id: verify-changed-files
         with:
           files: |
-            **.yml
-            **.yaml
-            .**.yml
+            **/**.yml
+            **/**.yaml
+            .**/**.yml
       - name: Run Yaml Linter
         if: steps.verify-changed-files.outputs.files_changed == 'true'
         run: |
