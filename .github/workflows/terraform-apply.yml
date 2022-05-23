@@ -16,9 +16,9 @@ jobs:
         id: verify-changed-files
         with:
           files: |
-            **.tf
-            **.tfvars
-            **.tfvars.json
+            **/**.tf
+            **/**.tfvars
+            **/**.tfvars.json
       - name: Setup Terraform
         if: steps.verify-changed-files.outputs.files_changed == 'true'
         uses: hashicorp/setup-terraform@main

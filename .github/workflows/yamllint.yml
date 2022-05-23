@@ -10,7 +10,7 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@main
       - name: Verify Changed files
-        uses: tj-actions/verify-changed-files@main
+        uses: tj-actions/verify-changed-files@v9.1
         id: verify-changed-files
         with:
           files: |
