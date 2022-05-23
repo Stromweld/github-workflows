@@ -12,7 +12,7 @@ jobs:
       - name: Verify Changed files
         id: verify-changed-files
         run: |
-          if git diff --diff-filter=d --name-only main main^@ | grep ".*\.yml|.*\.yaml"; then
+          if git diff --diff-filter=d --name-only | grep ".*\.yml|.*\.yaml"; then
             echo "::set-output name=files_changed::'true'"
           else
             echo "::set-output name=files_changed::'false'"
