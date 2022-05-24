@@ -15,8 +15,8 @@ jobs:
       - name: Verify Changed files
         id: verify-changed-files
         run: |
-          changed='${{ steps.changed-files.outputs.added_modified }}'
-          if (grep ".*\.md" <<< $changed); then
+          echo '${{ steps.changed-files.outputs.added_modified }}' > changed.txt
+          if grep ".*\.md" changed.txt; then
             echo "::set-output name=files_changed::'true'"
           else
             echo "::set-output name=files_changed::'false'"
