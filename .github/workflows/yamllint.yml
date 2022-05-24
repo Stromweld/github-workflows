@@ -9,13 +9,13 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@main
-        with:
-          fetch-depth: 0
+      - name: Pull Change list
+        id: changed-files
+        uses: collin-miller/git-changesets@main
       - name: Verify Changed files
         id: verify-changed-files
         run: |
-          apk add --no-cache git
-          changed=`git diff --diff-filter=d --name-only --merge-base`
+          changed=${{ steps.changed-files.outputs.added_modified }}
           if grep ".*\.yml|.*\.yaml" <<< $changed; then
             echo "::set-output name=files_changed::'true'"
           else
