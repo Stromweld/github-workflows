@@ -25,4 +25,4 @@ jobs:
         if: steps.verify-changed-files.outputs.files_changed == 'true'
         run: |
           pip install --no-cache-dir boto boto3 pylint
-          find . -not -path "*/\.*" -type f -iname "*.py" -exec pylint \{\} \+
+          find . -type f -iname "*.py" -exec pylint \{\} \+
