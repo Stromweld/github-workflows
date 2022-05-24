@@ -11,14 +11,18 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@main
+      - name: Pull Change list
+        id: changed-files
+        uses: collin-miller/git-changesets@master
       - name: Verify Changed files
-        uses: tj-actions/verify-changed-files@main
         id: verify-changed-files
-        with:
-          files: |
-            **/**.tf
-            **/**.tfvars
-            **/**.tfvars.json
+        run: |
+          echo '${{ steps.changed-files.outputs.added_modified }}' > changed.txt
+          if grep ".*\.tf\|.*\.tfvars\|.*.tfvars.json" changed.txt; then
+            echo "::set-output name=files_changed::true"
+          else
+            echo "::set-output name=files_changed::false"
+          fi
       - name: Setup Terraform
         if: steps.verify-changed-files.outputs.files_changed == 'true'
         uses: hashicorp/setup-terraform@main
