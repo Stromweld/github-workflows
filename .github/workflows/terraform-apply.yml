@@ -1,6 +1,8 @@
 ---
 on:
   workflow_call:
+    TOKEN_TFC:
+      required: true
 
 jobs:
   terraform-apply:
