@@ -17,12 +17,10 @@ jobs:
         run: |
           echo '${{ steps.changed-files.outputs.added_modified }}' > changed.txt
           if grep ".*\.md" changed.txt; then
-            echo "::set-output name=files_changed::'true'"
+            echo "::set-output name=files_changed::true"
           else
-            echo "::set-output name=files_changed::'false'"
+            echo "::set-output name=files_changed::false"
           fi
-          echo $changed
-          echo '${{ steps.verify-changed-files.outputs.files_changed }}'
       - name: Run Markdown Linter
         if: steps.verify-changed-files.outputs.files_changed == 'true'
         run: |
