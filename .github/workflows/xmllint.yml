@@ -25,4 +25,4 @@ jobs:
         if: steps.verify-changed-files.outputs.files_changed == 'true'
         run: |
           apk add --no-cache libxml2-utils
-          find . -not -path "*/\.*" -type f -iname "*.xml" -exec xmllint \{\} \+
+          find . -type f -iname "*.xml" -exec xmllint \{\} \+

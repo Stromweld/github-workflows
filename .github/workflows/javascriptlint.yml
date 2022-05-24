@@ -26,4 +26,4 @@ jobs:
         run: |
           npm install -g eslint
           eslint --init
-          find . -not -path "*/\.*" -type f -iname "*.js" -exec eslint \{\} \+
+          find . -type f -iname "*.js" -exec eslint \{\} \+

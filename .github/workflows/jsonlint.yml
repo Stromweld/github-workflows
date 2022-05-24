@@ -25,4 +25,4 @@ jobs:
         if: steps.verify-changed-files.outputs.files_changed == 'true'
         run: |
           pip install --no-cache-dir demjson3
-          find . -not -path "*/\.*" -type f -iname "*.json" -exec jsonlint \{\} \+
+          find . -type f -iname "*.json" -exec jsonlint \{\} \+
