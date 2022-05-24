@@ -25,4 +25,4 @@ jobs:
         if: steps.verify-changed-files.outputs.files_changed == 'true'
         run: |
           gem install yaml-lint
-          find . -type f -iname "*.yml|*.yaml" -exec yaml-lint \{\} \+
+          find . -type f \(-iname "*.yml" -o -iname "*.yaml"\) -exec yaml-lint \{\} \+
