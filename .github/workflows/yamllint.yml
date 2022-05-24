@@ -16,7 +16,7 @@ jobs:
         id: verify-changed-files
         run: |
           changed=${{ steps.changed-files.outputs.added_modified }}
-          if grep ".*\.yml|.*\.yaml" <<< $changed; then
+          if (grep ".*\.yml|.*\.yaml" <<< $changed); then
             echo "::set-output name=files_changed::'true'"
           else
             echo "::set-output name=files_changed::'false'"
