@@ -1,0 +1,26 @@
+---
+on:
+  pull_request:
+
+jobs:
+  markdownlint:
+    uses: ./.github/workflows/markdownlint.yml
+  yamllint:
+    uses: ./.github/workflows/yamllint.yml
+
+  check:
+    if: always()
+
+    needs:
+      - markdownlint
+      - yamllint
+
+    runs-on: Ubuntu-latest
+
+    steps:
+      - name: Decide whether the needed jobs succeeded or failed
+        uses: re-actors/alls-green@main
+        with:
+          allowed-failures:
+          allowed-skips:
+          jobs: ${{ toJSON(needs) }}
