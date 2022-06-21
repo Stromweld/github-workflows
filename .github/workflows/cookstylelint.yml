@@ -3,7 +3,7 @@ on:
   workflow_call:
 
 jobs:
-  xml-lint:
+  cookstyle-lint:
     runs-on: ubuntu-latest
     container: chef/chefworkstation
     steps:
