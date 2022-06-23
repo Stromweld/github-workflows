@@ -1,0 +1,25 @@
+---
+on:
+  workflow_call:
+    secrets:
+      SUPERMARKET_URL:
+        required: true
+      SUPERMARKET_KEY:
+        required: true
+      SUPERMARKET_USER:
+        required: true
+
+jobs:
+  supermarket-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@main
+      - name: Install Chef
+        uses: actionshub/chef-install@main
+      - name: Upload to Supermarket
+        run: knife supermarket share $(grep -oP "(?<=name ')[^' ]+" ./metadata.rb) -u $SUPERMARKET_USER -k "${{ secrets.SUPERMARKET_KEY }}" -o ../ -m $SUPERMARKET_URL
+        env:
+          CHEF_LICENSE: accept-no-persist
+          SUPERMARKET_URL: ${{ secrets.SUPERMARKET_URL }}
+          SUPERMARKET_USER: ${{ secrets.SUPERMARKET_USER }}
