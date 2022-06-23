@@ -18,9 +18,23 @@ jobs:
     steps:
       - name: Check out code
         uses: actions/checkout@main
+      - name: Pull Change list
+        id: changed-files
+        uses: collin-miller/git-changesets@master
+      - name: Verify Changed files
+        id: verify-changed-files
+        run: |
+          echo '${{ steps.changed-files.outputs.added_modified }}' > changed.txt
+          if grep ".*\.rb" changed.txt; then
+            echo "::set-output name=files_changed::true"
+          else
+            echo "::set-output name=files_changed::false"
+          fi
       - name: Install Chef
+        if: steps.verify-changed-files.outputs.files_changed == 'true'
         uses: actionshub/chef-install@main
       - name: Upload to Supermarket
+        if: steps.verify-changed-files.outputs.files_changed == 'true'
         run: |
           echo "${{ secrets.SUPERMARKET_KEY }}" >> ~/super.pem
           knife supermarket share $(grep -oP "(?<=name ')[^' ]+" ./metadata.rb) -u $SUPERMARKET_USER -k ~/super.pem -o ../ -m $SUPERMARKET_URL
