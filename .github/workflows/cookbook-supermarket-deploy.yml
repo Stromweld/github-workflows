@@ -1,12 +1,15 @@
 ---
 on:
   workflow_call:
-    secrets:
+    inputs:
       SUPERMARKET_URL:
         required: true
-      SUPERMARKET_KEY:
-        required: true
+        type: string
       SUPERMARKET_USER:
+        required: true
+        type: string
+    secrets:
+      SUPERMARKET_KEY:
         required: true
 
 jobs:
@@ -18,8 +21,10 @@ jobs:
       - name: Install Chef
         uses: actionshub/chef-install@main
       - name: Upload to Supermarket
-        run: knife supermarket share $(grep -oP "(?<=name ')[^' ]+" ./metadata.rb) -u $SUPERMARKET_USER -k "${{ secrets.SUPERMARKET_KEY }}" -o ../ -m $SUPERMARKET_URL
+        run: |
+          echo "${{ secrets.SUPERMARKET_KEY }}" >> ~/super.pem
+          knife supermarket share $(grep -oP "(?<=name ')[^' ]+" ./metadata.rb) -u $SUPERMARKET_USER -k ~/super.pem -o ../ -m $SUPERMARKET_URL
         env:
           CHEF_LICENSE: accept-no-persist
-          SUPERMARKET_URL: ${{ secrets.SUPERMARKET_URL }}
-          SUPERMARKET_USER: ${{ secrets.SUPERMARKET_USER }}
+          SUPERMARKET_URL: ${{ inputs.SUPERMARKET_URL }}
+          SUPERMARKET_USER: ${{ inputs.SUPERMARKET_USER }}
