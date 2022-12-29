@@ -4,13 +4,13 @@ on:
 
 jobs:
   markdown-lint:
-    uses: ./.github/workflows/markdown-lint.yml
+    uses: Stromweld/github-workflows/.github/workflows/markdown-lint.yml@main
 
   markdown-link-checker:
-    uses: ./.github/workflows/markdown-link-checker.yml
+    uses: Stromweld/github-workflows/.github/workflows/markdown-link-checker.yml@main
 
   yaml-lint:
-    uses: ./.github/workflows/yaml-lint.yml
+    uses: Stromweld/github-workflows/.github/workflows/yaml-lint.yml@main
 
   check:
     if: always()
