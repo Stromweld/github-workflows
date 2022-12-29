@@ -3,9 +3,9 @@ on:
   workflow_call:
 
 jobs:
-  json-lint:
+  cookstyle-lint:
     runs-on: ubuntu-latest
-    container: python:alpine
+    container: chef/chefworkstation
     steps:
       - name: Checkout Code
         uses: actions/checkout@main
@@ -16,13 +16,12 @@ jobs:
         id: verify-changed-files
         run: |
           echo '${{ steps.changed-files.outputs.added_modified }}' > changed.txt
-          if grep ".*\.json" changed.txt; then
-            echo "::set-output name=files_changed::true"
+          if grep ".*\.rb" changed.txt; then
+            echo "files_changed=true" >> $GITHUB_OUTPUT
           else
-            echo "::set-output name=files_changed::false"
+            echo "files_changed=false" >> $GITHUB_OUTPUT
           fi
-      - name: Run JSON Linter
+      - name: Run Cookstyle Linter
         if: steps.verify-changed-files.outputs.files_changed == 'true'
         run: |
-          pip install --no-cache-dir demjson3
-          find . -type f -iname "*.json" -exec jsonlint \{\} \+
+          cookstyle --display-cop-names --extra-details --show-docs-url --display-style-guide

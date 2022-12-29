@@ -1,15 +1,9 @@
 ---
 on:
   workflow_call:
-    secrets:
-      TOKEN_TFC:
-        required: true
-
-permissions:
-  contents: read
 
 jobs:
-  terraform-lint:
+  packer-fmt:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -21,22 +15,22 @@ jobs:
         id: verify-changed-files
         run: |
           echo '${{ steps.changed-files.outputs.added_modified }}' > changed.txt
-          if grep ".*\.tf\|.*\.tfvars\|.*.tfvars.json" changed.txt; then
+          if grep ".*\.hcl" changed.txt; then
             echo "files_changed=true" >> $GITHUB_OUTPUT
           else
             echo "files_changed=false" >> $GITHUB_OUTPUT
           fi
-      - name: Check linting of Terraform modules
+      - name: Setup Packer
         if: steps.verify-changed-files.outputs.files_changed == 'true'
-        uses: devops-infra/action-tflint@master
+        uses: hashicorp/setup-packer@main
         with:
-          tflint_params: "--module --deep"
+          version: latest
+      - name: Packer FMT
+        if: steps.verify-changed-files.outputs.files_changed == 'true'
+        run: if packer fmt -check -recursive .; then exit 0; else echo "Some packer files need to be formatted, run 'packer fmt -recursive .' to fix"; exit 1; fi
 
-  terraform-fmt:
+  enumerate_pkrvars_validation:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        shell: bash
     steps:
       - name: Checkout
         uses: actions/checkout@main
@@ -47,22 +41,28 @@ jobs:
         id: verify-changed-files
         run: |
           echo '${{ steps.changed-files.outputs.added_modified }}' > changed.txt
-          if grep ".*\.tf\|.*\.tfvars\|.*.tfvars.json" changed.txt; then
+          if grep ".*\.hcl" changed.txt; then
             echo "files_changed=true" >> $GITHUB_OUTPUT
           else
             echo "files_changed=false" >> $GITHUB_OUTPUT
           fi
-      - name: Terraform Format
+      - name: Enumerate pkrvars validation
         if: steps.verify-changed-files.outputs.files_changed == 'true'
-        uses: actionshub/terraform-lint@main
+        shell: pwsh
+        run: "'::set-output name=matrix::{0}' -f $(Get-ChildItem -Path ./ -Include *.pkrvars.hcl -Recurse | Foreach-Object {Join-Path -Path $_.Directory.Name -ChildPath $_.Name} | ConvertTo-Json -Compress)"
+        id: enumerate_pkrvars_validation
+    outputs:
+      matrix: ${{ steps.enumerate_pkrvars_validation.outputs.matrix }}
 
-  terraform-validate:
+  packer-validate:
+    needs: enumerate_pkrvars_validation
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        shell: bash
+    strategy:
+      fail-fast: false
+      matrix:
+        pkrvars: ${{ fromJson(needs.enumerate_pkrvars_validation.outputs.matrix) }}
     steps:
-      - name: Checkout
+      - name: Checkout Repository
         uses: actions/checkout@main
       - name: Pull Change list
         id: changed-files
@@ -71,25 +71,21 @@ jobs:
         id: verify-changed-files
         run: |
           echo '${{ steps.changed-files.outputs.added_modified }}' > changed.txt
-          if grep ".*\.tf\|.*\.tfvars\|.*.tfvars.json" changed.txt; then
+          if grep ".*\.hcl" changed.txt; then
             echo "files_changed=true" >> $GITHUB_OUTPUT
           else
             echo "files_changed=false" >> $GITHUB_OUTPUT
           fi
-      - name: Setup Terraform
+      - name: Setup Packer
         if: steps.verify-changed-files.outputs.files_changed == 'true'
-        uses: hashicorp/setup-terraform@main
+        uses: hashicorp/setup-packer@main
         with:
-          cli_config_credentials_token: ${{ secrets.TOKEN_TFC }}
-      - name: Terraform Init
+          version: latest
+      - name: Packer Init
         if: steps.verify-changed-files.outputs.files_changed == 'true'
-        run: |
-          cat <<-EOF > ./sensitive.auto.tfvars
-          tfc_token    = "${{ secrets.TOKEN_TFC }}"
-          github_token = "${{ secrets.TOKEN_GITHUB }}"
-          EOF
-          terraform init
-          terraform -version
-      - name: Terraform Validate
+        env:
+          PACKER_GITHUB_API_TOKEN: "${{ secrets.PACKER_GITHUB_API_TOKEN }}"
+        run: packer init -upgrade packer_templates
+      - name: Packer Validate
         if: steps.verify-changed-files.outputs.files_changed == 'true'
-        run: terraform validate
+        run: packer validate -var-file=os_pkrvars/"${{ matrix.pkrvars }}" packer_templates

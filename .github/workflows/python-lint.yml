@@ -3,10 +3,11 @@ on:
   workflow_call:
 
 jobs:
-  markdown-link-checker:
+  python-lint:
     runs-on: ubuntu-latest
+    container: python:alpine
     steps:
-      - name: Check out code
+      - name: Checkout Code
         uses: actions/checkout@main
       - name: Pull Change list
         id: changed-files
@@ -15,13 +16,13 @@ jobs:
         id: verify-changed-files
         run: |
           echo '${{ steps.changed-files.outputs.added_modified }}' > changed.txt
-          if grep ".*\.md" changed.txt; then
-            echo "::set-output name=files_changed::true"
+          if grep ".*\.py" changed.txt; then
+            echo "files_changed=true" >> $GITHUB_OUTPUT
           else
-            echo "::set-output name=files_changed::false"
+            echo "files_changed=false" >> $GITHUB_OUTPUT
           fi
-      - name: markdown-link-check
+      - name: Run Python Lint
         if: steps.verify-changed-files.outputs.files_changed == 'true'
-        uses: gaurav-nelson/github-action-markdown-link-check@master
-        with:
-          use-verbose-mode: "yes"
+        run: |
+          pip install --no-cache-dir boto boto3 pylint
+          find . -type f -iname "*.py" -exec pylint \{\} \+
