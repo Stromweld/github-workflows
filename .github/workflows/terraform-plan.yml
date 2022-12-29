@@ -22,9 +22,9 @@ jobs:
         run: |
           echo '${{ steps.changed-files.outputs.added_modified }}' > changed.txt
           if grep ".*\.tf\|.*\.tfvars\|.*.tfvars.json" changed.txt; then
-            echo "::set-output name=files_changed::true"
+            echo "files_changed=true" >> $GITHUB_OUTPUT
           else
-            echo "::set-output name=files_changed::false"
+            echo "files_changed=false" >> $GITHUB_OUTPUT
           fi
       - name: Setup Terraform
         if: steps.verify-changed-files.outputs.files_changed == 'true'

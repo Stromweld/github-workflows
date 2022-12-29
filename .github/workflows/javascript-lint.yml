@@ -3,9 +3,9 @@ on:
   workflow_call:
 
 jobs:
-  python-lint:
+  javascript-lint:
     runs-on: ubuntu-latest
-    container: python:alpine
+    container: node:alpine
     steps:
       - name: Checkout Code
         uses: actions/checkout@main
@@ -16,13 +16,14 @@ jobs:
         id: verify-changed-files
         run: |
           echo '${{ steps.changed-files.outputs.added_modified }}' > changed.txt
-          if grep ".*\.py" changed.txt; then
-            echo "::set-output name=files_changed::true"
+          if grep ".*\.js" changed.txt; then
+            echo "files_changed=true" >> $GITHUB_OUTPUT
           else
-            echo "::set-output name=files_changed::false"
+            echo "files_changed=false" >> $GITHUB_OUTPUT
           fi
-      - name: Run Python Lint
+      - name: Run Java Script Linter
         if: steps.verify-changed-files.outputs.files_changed == 'true'
         run: |
-          pip install --no-cache-dir boto boto3 pylint
-          find . -type f -iname "*.py" -exec pylint \{\} \+
+          npm install -g eslint
+          eslint --init
+          find . -type f -iname "*.js" -exec eslint \{\} \+

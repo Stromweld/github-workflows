@@ -3,9 +3,9 @@ on:
   workflow_call:
 
 jobs:
-  cookstyle-lint:
+  xml-lint:
     runs-on: ubuntu-latest
-    container: chef/chefworkstation
+    container: alpine
     steps:
       - name: Checkout Code
         uses: actions/checkout@main
@@ -16,12 +16,13 @@ jobs:
         id: verify-changed-files
         run: |
           echo '${{ steps.changed-files.outputs.added_modified }}' > changed.txt
-          if grep ".*\.rb" changed.txt; then
-            echo "::set-output name=files_changed::true"
+          if grep ".*\.xml" changed.txt; then
+            echo "files_changed=true" >> $GITHUB_OUTPUT
           else
-            echo "::set-output name=files_changed::false"
+            echo "files_changed=false" >> $GITHUB_OUTPUT
           fi
-      - name: Run Cookstyle Linter
+      - name: Run XML Linter
         if: steps.verify-changed-files.outputs.files_changed == 'true'
         run: |
-          cookstyle --display-cop-names --extra-details --show-docs-url --display-style-guide
+          apk add --no-cache libxml2-utils
+          find . -type f -iname "*.xml" -exec xmllint \{\} \+

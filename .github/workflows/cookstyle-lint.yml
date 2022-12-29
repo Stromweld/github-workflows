@@ -3,9 +3,9 @@ on:
   workflow_call:
 
 jobs:
-  yaml-lint:
+  cookstyle-lint:
     runs-on: ubuntu-latest
-    container: ruby:alpine
+    container: chef/chefworkstation
     steps:
       - name: Checkout Code
         uses: actions/checkout@main
@@ -16,14 +16,12 @@ jobs:
         id: verify-changed-files
         run: |
           echo '${{ steps.changed-files.outputs.added_modified }}' > changed.txt
-          if grep ".*\.yml\|.*\.yaml" changed.txt; then
-            echo "::set-output name=files_changed::true"
+          if grep ".*\.rb" changed.txt; then
+            echo "files_changed=true" >> $GITHUB_OUTPUT
           else
-            echo "::set-output name=files_changed::false"
+            echo "files_changed=false" >> $GITHUB_OUTPUT
           fi
-      - name: Run Yaml Linter
+      - name: Run Cookstyle Linter
         if: steps.verify-changed-files.outputs.files_changed == 'true'
         run: |
-          gem install yaml-lint
-          find . -type f -iname "*.yml" -exec yaml-lint \{\} \+
-          find . -type f -iname "*.yaml" -exec yaml-lint \{\} \+
+          cookstyle --display-cop-names --extra-details --show-docs-url --display-style-guide

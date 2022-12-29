@@ -3,11 +3,10 @@ on:
   workflow_call:
 
 jobs:
-  json-lint:
+  markdown-link-checker:
     runs-on: ubuntu-latest
-    container: python:alpine
     steps:
-      - name: Checkout Code
+      - name: Check out code
         uses: actions/checkout@main
       - name: Pull Change list
         id: changed-files
@@ -16,13 +15,13 @@ jobs:
         id: verify-changed-files
         run: |
           echo '${{ steps.changed-files.outputs.added_modified }}' > changed.txt
-          if grep ".*\.json" changed.txt; then
-            echo "::set-output name=files_changed::true"
+          if grep ".*\.md" changed.txt; then
+            echo "files_changed=true" >> $GITHUB_OUTPUT
           else
-            echo "::set-output name=files_changed::false"
+            echo "files_changed=false" >> $GITHUB_OUTPUT
           fi
-      - name: Run JSON Linter
+      - name: markdown-link-check
         if: steps.verify-changed-files.outputs.files_changed == 'true'
-        run: |
-          pip install --no-cache-dir demjson3
-          find . -type f -iname "*.json" -exec jsonlint \{\} \+
+        uses: gaurav-nelson/github-action-markdown-link-check@master
+#        with:
+#          use-verbose-mode: "yes"
